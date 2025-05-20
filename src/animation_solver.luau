@@ -60,7 +60,7 @@ local function get_keyframe_after(
 	return closestKeyframe
 end
 
-local function calculate(rig: { [string]: CFrame }, info: create_rig.LimbInfo, origin: CFrame)
+local function calculate(rig: { [string]: CFrame }, info: create_rig.LimbInfo, origin: CFrame): ()
 	local result_transform = origin * info.coordinate_frame0 * info.transform * info.coordinate_frame1
 
 	rig[info.name] = result_transform
@@ -74,7 +74,7 @@ local function animation_solver(
 	rig: create_rig.Identity,
 	anim_playbacks: { [animation_asset.Identity]: AnimationPlayback },
 	root: CFrame
-)
+): ()
 	local limb_info_array = rig.flattened
 	for _, node in limb_info_array do
 		node.priority = -1

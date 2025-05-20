@@ -27,7 +27,7 @@ export type Identity = {
 	looping: boolean,
 }
 
-local function recursive_tree_from_pose(keyframe: Keyframe, poses: { [string]: PoseNode }, root_pose: Pose)
+local function recursive_tree_from_pose(keyframe: Keyframe, poses: { [string]: PoseNode }, root_pose: Pose): ()
 	local sub_poses = (root_pose:GetSubPoses() :: any) :: { Pose }
 
 	for _, sub_pose in sub_poses do
@@ -70,7 +70,7 @@ function animation_asset.load_keyframe_sequence(keyframe_sequence: KeyframeSeque
 		})
 	end
 
-	table.sort(keyframe_nodes, function(left, right)
+	table.sort(keyframe_nodes, function(left: KeyframeNode, right: KeyframeNode): boolean
 		return left.time < right.time
 	end)
 
