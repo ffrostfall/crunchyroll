@@ -1,6 +1,12 @@
 local create_rig = require("./rig")
 local animation_asset = require("./animation_asset")
 
+local _, cframe__mult = xpcall(function()
+	return (CFrame.identity :: any) * nil
+end, function()
+	return debug.info(2, "f")
+end)
+
 export type AnimationPlayback = {
 	asset: animation_asset.Identity,
 
@@ -61,7 +67,8 @@ local function get_keyframe_after(
 end
 
 local function calculate(rig: { [string]: CFrame }, info: create_rig.LimbInfo, origin: CFrame)
-	local result_transform = origin * info.coordinate_frame0 * info.transform * info.coordinate_frame1
+	local result_transform =
+		cframe__mult(cframe__mult(cframe__mult(origin, info.coordinate_frame0), info.transform), info.coordinate_frame1)
 
 	rig[info.name] = result_transform
 
@@ -74,7 +81,7 @@ local function animation_solver(
 	rig: create_rig.Identity,
 	anim_playbacks: { [animation_asset.Identity]: AnimationPlayback },
 	root: CFrame
-)
+): ()
 	local limb_info_array = rig.flattened
 	for _, node in limb_info_array do
 		node.priority = -1
