@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[490],{3662:s=>{s.exports=JSON.parse('{"functions":[],"properties":[],"types":[],"name":"AnimationAsset","desc":"An animation asset. This stores the animation length, and the keyframes.","source":{"line":74,"path":"src/init.luau"}}')}}]);
