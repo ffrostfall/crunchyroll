@@ -1,5 +1,3 @@
-local CFrame = CFrame or (require("@lune/roblox").CFrame :: typeof(CFrame))
-
 export type LimbInfo = {
 	c0: CFrame,
 	c1: CFrame,
@@ -16,7 +14,10 @@ export type Limb = {
 	depends_on: string,
 
 	priority: number,
-	transform: CFrame,
+
+	position: vector,
+	quat_vector: vector,
+	quat_scalar: number,
 }
 
 export type Identity = {
@@ -39,7 +40,9 @@ local function topological_sort(array: { Limb }, node: LimbInfo)
 			c1 = value.c1:Inverse(),
 
 			priority = -1,
-			transform = CFrame.identity,
+			position = vector.zero,
+			quat_vector = vector.zero,
+			quat_scalar = 1,
 		})
 
 		topological_sort(array, value)
@@ -57,7 +60,9 @@ local function create_rig(limb: LimbInfo): Identity
 		c1 = limb.c1:Inverse(),
 
 		priority = -1,
-		transform = CFrame.identity,
+		position = vector.zero,
+		quat_vector = vector.zero,
+		quat_scalar = 1,
 	})
 
 	topological_sort(limb_arr, limb)

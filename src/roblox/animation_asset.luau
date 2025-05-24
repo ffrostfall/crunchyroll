@@ -6,7 +6,10 @@ export type PoseNode = {
 
 	easing_function: (alpha: number) -> number,
 
-	coordinate_frame: CFrame,
+	position: vector,
+	--- xyz components of a unit quaternion
+	quat_vector: vector,
+	quat_scalar: number,
 
 	name: string,
 	time: number,
@@ -34,11 +37,21 @@ local function recursive_tree_from_pose(
 		recursive_tree_from_pose(keyframe, poses, sub_pose)
 	end
 
+	local cframe = root_pose.CFrame
+	local axis, angle = cframe:ToAxisAngle()
+
+	local half_angle = angle / 2
+	local position = cframe.Position
+	local quat_vector = axis * math.sin(half_angle)
+	local quat_scalar = math.cos(half_angle)
+
 	poses[root_pose.Name] = {
 		easing_direction = root_pose.EasingDirection,
 		easing_style = root_pose.EasingStyle,
 
-		coordinate_frame = root_pose.CFrame,
+		position = position,
+		quat_vector = quat_vector,
+		quat_scalar = quat_scalar,
 
 		easing_function = easing_enum_map[root_pose.EasingStyle][root_pose.EasingDirection],
 

@@ -1,3 +1,5 @@
+--!optimize 2
+
 local animation_asset = require("./roblox/animation_asset")
 local create_rig = require("./rig")
 
@@ -13,6 +15,19 @@ export type AnimationTrack = {
 	-- arbitrary number
 	priority: number,
 }
+
+local function vector_lerp(a: vector, b: vector, t: number): vector
+	return a + (b - a) * t
+end
+
+local function quat_nlerp(a_vector: vector, a_scalar: number, b_vector: vector, b_scalar, t: number)
+	local quat_vector = vector_lerp(a_vector, b_vector, t)
+	local quat_scalar = math.lerp(a_scalar, b_scalar, t)
+
+	--stylua: ignore
+	local magnitude = math.sqrt(quat_vector.X^2 + quat_vector.Y^2 + quat_vector.Z^2 + quat_scalar^2)
+	return quat_vector / magnitude, quat_scalar / magnitude
+end
 
 local function solve_fade_time_influence(
 	real_time: number,
@@ -61,17 +76,14 @@ local function animation_solver(
 			)
 
 		-- Figure out which keyframes to interpolate between
-		local keyframe_after: animation_asset.KeyframeNode?, closest_distance_after: number, keyframe_before: animation_asset.KeyframeNode?, closest_distance_before: number =
-			nil, math.huge, nil, math.huge
+		local keyframe_after: animation_asset.KeyframeNode?
+		local keyframe_before: animation_asset.KeyframeNode?
 
-		for _, keyframe in animation.keyframes do
-			local distance = keyframe.time - real_time
-			local absolute_distance = math.abs(distance)
-
-			if distance >= 0 and (absolute_distance < closest_distance_after) then
-				keyframe_after, closest_distance_after = keyframe, absolute_distance
-			elseif distance <= 0 and (absolute_distance < closest_distance_before) then
-				keyframe_before, closest_distance_before = keyframe, absolute_distance
+		for index, keyframe in animation.keyframes do
+			if keyframe.time >= real_time then
+				keyframe_after = keyframe
+				keyframe_before = animation.keyframes[index - 1]
+				break
 			end
 		end
 
@@ -81,34 +93,54 @@ local function animation_solver(
 				continue
 			end
 
-			local left_pose, right_pose =
+			local left_pose: animation_asset.PoseNode?, right_pose: animation_asset.PoseNode? =
 				keyframe_before and keyframe_before.poses[node.name],
 				keyframe_after and keyframe_after.poses[node.name]
 			local left_or_right = left_pose or right_pose
 
+			--stylua: ignore start
 			if left_pose and right_pose then
-				--stylua: ignore
-				node.transform, node.priority =
-					node.transform:Lerp(
-						-- Doubled lerped for blending
-						left_pose.coordinate_frame:Lerp(
-							right_pose.coordinate_frame,
-							left_pose.easing_function((real_time - left_pose.time) / (right_pose.time - left_pose.time))
-						),
-						influence
-					), priority
+				local alpha = left_pose.easing_function((real_time - left_pose.time) / (right_pose.time - left_pose.time))
+				local position = vector_lerp(left_pose.position, right_pose.position, alpha)
+				local quat_vector, quat_scalar = quat_nlerp(
+					left_pose.quat_vector, left_pose.quat_scalar, 
+					right_pose.quat_vector, right_pose.quat_scalar, 
+					alpha
+				)
+
+				node.position = vector_lerp(node.position, position, influence)
+				node.quat_vector, node.quat_scalar = quat_nlerp(
+					node.quat_vector, node.quat_scalar, 
+					quat_vector, quat_scalar, 
+					influence
+				)
+				node.priority = priority
 			elseif left_or_right then
-				node.transform, node.priority =
-					node.transform:Lerp(left_or_right.coordinate_frame, influence), priority
+				node.position = vector_lerp(node.position, left_or_right.position, influence)
+				node.quat_vector, node.quat_scalar = quat_nlerp(
+					node.quat_vector, node.quat_scalar, 
+					left_or_right.quat_vector, left_or_right.quat_scalar, influence
+				)
+				node.priority = priority
 			end
+			--stylua: ignore end
 		end
 	end
 
 	result_coordinate_frames["root"] = root
 	for _, limb in limb_array do
+		local position = limb.position
+		local quat_vector = limb.quat_vector
+
+		--stylua: ignore
+		local transform = CFrame.new(
+			position.X, position.Y, position.Z,
+			quat_vector.X, quat_vector.Y, quat_vector.Z, limb.quat_scalar
+		)
+
 		result_coordinate_frames[limb.name] = result_coordinate_frames[limb.depends_on]
 			* limb.c0
-			* limb.transform
+			* transform
 			* limb.c1
 	end
 end
