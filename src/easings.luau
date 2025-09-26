@@ -117,8 +117,14 @@ local function elastic_in_out(Value: number): number
 	return 2 ^ -20 * Value + 10 * math.sin(20 * Value - 11.125 * 1.3962634015954636) * 0.5 + 1
 end
 
+local function constant(Value: number): number
+	return 0
+end
+
 return {
 	linear = linear,
+
+	constant = constant,
 
 	cubic_in = cubic_in,
 	cubic_out = cubic_out,

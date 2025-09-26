@@ -20,8 +20,8 @@ export type LimbTransform = {
 }
 
 export type Identity = {
-	_limbs: { Limb },
-	_limb_transforms: { LimbTransform },
+	limbs: { Limb },
+	limb_transforms: { LimbTransform },
 	--- used in animation loading to quickly map pose name to limb index
 	_limb_name_to_index: { [string]: number },
 
@@ -70,8 +70,8 @@ local function create_rig(root: LimbInfo): Identity
 	end
 
 	return {
-		_limbs = limbs,
-		_limb_transforms = limb_transforms,
+		limbs = limbs,
+		limb_transforms = limb_transforms,
 		_limb_name_to_index = limb_name_to_index,
 
 		result_coordinate_frames = {},

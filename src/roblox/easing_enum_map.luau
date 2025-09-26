@@ -10,6 +10,7 @@ local LINEAR = Enum.PoseEasingStyle.Linear
 local CUBIC = Enum.PoseEasingStyle.Cubic
 local BOUNCE = Enum.PoseEasingStyle.Bounce
 local ELASTIC = Enum.PoseEasingStyle.Elastic
+local CONSTANT = Enum.PoseEasingStyle.Constant
 
 return {
 	[LINEAR] = {
@@ -34,5 +35,11 @@ return {
 		[EASING_IN] = easings.elastic_in,
 		[EASING_OUT] = easings.elastic_out,
 		[EASING_IN_OUT] = easings.elastic_in_out,
+	},
+
+	[CONSTANT] = {
+		[EASING_IN] = easings.constant,
+		[EASING_OUT] = easings.constant,
+		[EASING_IN_OUT] = easings.constant,
 	},
 }
