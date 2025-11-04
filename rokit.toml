@@ -2,7 +2,7 @@
 rojo = "rojo-rbx/rojo@7.5.1"
 wally = "UpliftGames/wally@0.3.2"
 stylua = "JohnnyMorganz/StyLua@2.1.0"
-luaulsp = "JohnnyMorganz/luau-lsp@1.51.0"
+luaulsp = "JohnnyMorganz/luau-lsp@1.56.0"
 
 # TODO: Create Lute type definitions & switch away from Lune
 # TODO: Do Lute FFI & Roblox package & switch away from Lune

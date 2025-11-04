@@ -79,7 +79,7 @@ function animation_asset.load_keyframe_sequence(
 		})
 	end
 
-	table.sort(keyframe_nodes, function(left, right)
+	table.sort(keyframe_nodes, function(left: KeyframeNode, right: KeyframeNode)
 		return left.time < right.time
 	end)
 
