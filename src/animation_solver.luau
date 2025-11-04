@@ -14,10 +14,6 @@ export type AnimationTrack = {
 	priority: number,
 }
 
-local function vector_lerp(a: vector, b: vector, t: number): vector
-	return a + (b - a) * t
-end
-
 local function quat_nlerp(
 	a_vector: vector,
 	a_scalar: number,
@@ -25,7 +21,7 @@ local function quat_nlerp(
 	b_scalar: number,
 	t: number
 ): (vector, number)
-	local quat_vector = vector_lerp(a_vector, b_vector, t)
+	local quat_vector = vector.lerp(a_vector, b_vector, t)
 	local quat_scalar = math.lerp(a_scalar, b_scalar, t)
 
 	local magnitude =
@@ -133,7 +129,7 @@ local function animation_solver(
 			--stylua: ignore start
 			if left_pose and right_pose  then
 				local alpha = left_pose.easing_function((real_time - (time_before :: number)) / ((time_after :: number) - (time_before :: number)))
-				local position = vector_lerp(left_pose.position, right_pose.position, alpha)
+				local position = vector.lerp(left_pose.position, right_pose.position, alpha)
 
 				local quat_vector, quat_scalar = quat_nlerp(
 					left_pose.quat_vector, left_pose.quat_scalar,
@@ -141,7 +137,7 @@ local function animation_solver(
 					alpha
 				)
 
-				node.position = vector_lerp(node.position, position, influence)
+				node.position = vector.lerp(node.position, position, influence)
 				node.quat_vector, node.quat_scalar = quat_nlerp(
 					node.quat_vector, node.quat_scalar,
 					quat_vector, quat_scalar,
@@ -150,7 +146,7 @@ local function animation_solver(
 
 				node.priority = priority
 			elseif left_pose then
-				node.position = vector_lerp(node.position, left_pose.position, influence)
+				node.position = vector.lerp(node.position, left_pose.position, influence)
 
 				node.quat_vector, node.quat_scalar = quat_nlerp(
 					node.quat_vector, node.quat_scalar,
