@@ -64,6 +64,11 @@ local function apply_cframe(character, rig)
 
 	character["Torso"].CFrame = rig.result_coordinate_frames["Torso"]
 	character["Head"].CFrame = rig.result_coordinate_frames["Head"]
+
+	local joint = character:FindFirstChild("ExtraJoint")
+	if joint then
+		joint.CFrame = rig.result_coordinate_frames["ExtraJoint"]
+	end
 end
 
 -- one keyframe
@@ -96,6 +101,7 @@ for _, keyframe_sequence in
 		ReplicatedStorage.assets.animation_with_hulls,
 		ReplicatedStorage.assets.wave_5_step,
 		ReplicatedStorage.assets.lift_left_arm,
+		ReplicatedStorage.assets.joint_animation,
 	}
 do
 	local character = spawn_character()
@@ -106,6 +112,7 @@ do
 	local animation = crunchyroll.load_keyframe_sequence(keyframe_sequence, rig)
 
 	local joint_lookup = {
+		["ExtraJoint"] = motor_6dcharacter.HumanoidRootPart.ExtraJoint,
 		["Head"] = motor_6dcharacter.Torso.Neck,
 		["Right Arm"] = motor_6dcharacter.Torso["Right Shoulder"],
 		["Left Arm"] = motor_6dcharacter.Torso["Left Shoulder"],
@@ -153,7 +160,9 @@ do
 				quat_scalar
 			)
 
-			joint_lookup[joint.name].Transform = transform
+			if joint_lookup[joint.name] then
+				joint_lookup[joint.name].Transform = transform
+			end
 		end
 	end)
 end
