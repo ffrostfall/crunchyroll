@@ -98,7 +98,7 @@ end
 for _, keyframe_sequence in
 	{
 		ReplicatedStorage.assets.walk,
-		ReplicatedStorage.assets.animation_with_hulls,
+		ReplicatedStorage.assets.animation_with_holes,
 		ReplicatedStorage.assets.wave_5_step,
 		ReplicatedStorage.assets.lift_left_arm,
 		ReplicatedStorage.assets.joint_animation,

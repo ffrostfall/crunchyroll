@@ -8,7 +8,7 @@ export type PoseNode = {
 	quat_scalar: number,
 	easing_function: (alpha: number) -> number,
 }
-export type KeyframeHull = { number } -- range[left, right] -> keyframe_time index
+export type KeyframeHole = { number } -- range[left, right] -> keyframe_time index
 export type Poses = { PoseNode }
 
 type KeyframeNode = {
@@ -19,7 +19,7 @@ type KeyframeNode = {
 export type Identity = {
 	keyframe_times: { number },
 	keyframe_poses: { Poses },
-	keyframe_hulls: { [number]: { KeyframeHull } },
+	keyframe_holes: { [number]: { KeyframeHole } },
 	length: number,
 }
 
@@ -83,11 +83,11 @@ function animation_asset.load_keyframe_sequence(
 		return left.time < right.time
 	end)
 
-	local limb_name_to_index = rig._limb_name_to_index
-	local hulls: { [number]: { KeyframeHull } } = {}
+	local limb_name_to_index = rig.limb_name_to_index
+	local keframe_holes: { [number]: { KeyframeHole } } = {}
 
-	-- previous keyframe that had no hulls, [limb_index]: keyframe_node_index
-	local no_hull: { [number]: number } = {}
+	-- previous keyframe that had no holes, [limb_index]: keyframe_node_index
+	local no_holes: { [number]: number } = {}
 	local future_right: { [number]: true | nil } = {}
 
 	for index, node in keyframe_nodes do
@@ -103,13 +103,13 @@ function animation_asset.load_keyframe_sequence(
 			end
 
 			if node.poses[limb_name] then
-				no_hull[limb_index] = index
+				no_holes[limb_index] = index
 				future_right[limb_index] = nil
 			elseif not node.poses[limb_name] and future_right[limb_index] == nil then
-				-- there's a hull, find the left and right keyframes and fill the indexes between
+				-- there's a holes, find the left and right keyframes and fill the indexes between
 				-- left should always be avaliable
 
-				local left_pointer = no_hull[limb_index]
+				local left_pointer = no_holes[limb_index]
 				assert(left_pointer, "there should always be a left pointer keyframe")
 
 				local right_pointer
@@ -123,19 +123,19 @@ function animation_asset.load_keyframe_sequence(
 
 				-- if this is nil, the limb does not have any future keyframes
 				if right_pointer then
-					local hull = {
+					local hole = {
 						left_pointer,
 						right_pointer,
 					}
 
-					local limb_hull = hulls[limb_index]
-					if limb_hull == nil then
-						limb_hull = {}
-						hulls[limb_index] = limb_hull
+					local limb_holes = keframe_holes[limb_index]
+					if limb_holes == nil then
+						limb_holes = {}
+						keframe_holes[limb_index] = limb_holes
 					end
 
 					for fill_in = left_pointer + 1, right_pointer do
-						limb_hull[fill_in] = hull
+						limb_holes[fill_in] = hole
 					end
 				end
 			end
@@ -163,7 +163,7 @@ function animation_asset.load_keyframe_sequence(
 		keyframe_times = keyframe_times,
 		keyframe_poses = keyframe_poses,
 		length = length,
-		keyframe_hulls = hulls,
+		keyframe_holes = keframe_holes,
 	}
 end
 

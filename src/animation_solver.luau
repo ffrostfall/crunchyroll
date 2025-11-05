@@ -104,12 +104,12 @@ local function animation_solver(
 				continue
 			end
 
-			-- find hulls in the animation
+			-- find holes in the animation
 			local left_pose = poses_before and poses_before[index]
 			local time_before = pose_time_before
 			if left_pose == nil then
-				local left_pose_pointer = if animation.keyframe_hulls[index]
-					then animation.keyframe_hulls[index][high][1]
+				local left_pose_pointer = if animation.keyframe_holes[index]
+					then animation.keyframe_holes[index][high][1]
 					else 1
 
 				left_pose = animation.keyframe_poses[left_pose_pointer][index]
@@ -118,8 +118,8 @@ local function animation_solver(
 
 			local right_pose = poses_after and poses_after[index]
 			local time_after = pose_time_after
-			local pointer = animation.keyframe_hulls[index]
-				and animation.keyframe_hulls[index][high + 1]
+			local pointer = animation.keyframe_holes[index]
+				and animation.keyframe_holes[index][high + 1]
 			if pointer then
 				local right_pose_pointer = pointer[2]
 				right_pose = animation.keyframe_poses[right_pose_pointer][index]
