@@ -40,7 +40,7 @@ local function recursive_tree_from_pose(poses: { [string]: PoseNode }, root_pose
 
 	local half_angle = angle / 2
 	local position = cframe.Position :: any
-	local quat_vector = axis * math.sin(half_angle)
+	local quat_vector = axis * math.sin(half_angle) :: any
 	local quat_scalar = math.cos(half_angle)
 
 	-- TODO weird type error
@@ -49,7 +49,7 @@ local function recursive_tree_from_pose(poses: { [string]: PoseNode }, root_pose
 		quat_vector = quat_vector,
 		quat_scalar = quat_scalar,
 		easing_function = easing_enum_map[root_pose.EasingStyle][root_pose.EasingDirection],
-	} :: any
+	}
 end
 
 local animation_asset = {}
@@ -99,7 +99,7 @@ function animation_asset.load_keyframe_sequence(
 					quat_vector = vector.zero,
 					quat_scalar = 1,
 					easing_function = easing.linear,
-				} :: any
+				}
 			end
 
 			if node.poses[limb_name] then
