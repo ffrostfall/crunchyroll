@@ -8,7 +8,10 @@ export type PoseNode = {
 	quat_scalar: number,
 	easing_function: (alpha: number) -> number,
 }
-export type KeyframeHole = { number } -- range[left, right] -> keyframe_time index
+
+--- [1] = previous keyframe index
+--- [2] = next keyframe index
+export type KeyframeHole = { number }
 export type Poses = { PoseNode }
 
 type KeyframeNode = {
