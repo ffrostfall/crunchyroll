@@ -50,3 +50,69 @@ crunchyroll_animation.solve_animation(rig, {
 -- placed into a result table for optimal performance
 local left_arm_cframe = rig.result_coordinate_frames["Left Arm"]
 ```
+
+# Example with AnimationConstraints or Motor6D
+
+Warning to use this approach on a Character rig. You must do either one of these
+- Delete the [`Animator`](https://create.roblox.com/docs/reference/engine/classes/Animator) Instance.
+- Keep the [`Animator`](https://create.roblox.com/docs/reference/engine/classes/Animator) Instance and apply the edits within [`RunService.PreSimulation`](https://create.roblox.com/docs/reference/engine/classes/RunService#PreSimulation)
+
+
+
+*Most likely the best approach would be to delete the [`Animator`](https://create.roblox.com/docs/reference/engine/classes/Animator) Instance*
+
+The [`Animator`](https://create.roblox.com/docs/reference/engine/classes/Animator) Roblox game engine will overwrite any edits you do before or during [`RunService.PreAnimation`](https://create.roblox.com/docs/reference/engine/classes/RunService#PreAnimation)
+
+otherwise the [`Animator`](https://create.roblox.com/docs/reference/engine/classes/Animator) instance will hold you in neutral pose
+
+```luau
+-- during the rig creation ...
+local rig = require(...) -- Path to a Crunchyroll R6 rig
+local crunchyroll = require(...) -- Path to Crunchyroll
+
+-- link up the Animation Constraints or Motor6D
+-- standard r6 setup
+-- [Crunchyroll Limb name [`limb.name`]] = AnimationConstraint | Motor6D
+local tree: { [string]: AnimationConstraint | Motor6D } = {
+    ["Torso"] = character.HumanoidRootPart.RootJoint,
+    ["Head"] = character.Torso.Neck,
+    ["Left Leg"] = character.Torso["Left Hip"],
+    ["Right Leg"] = character.Torso["Right Hip"],
+	["Left Arm"] = character.Torso["Left Shoulder"],
+    ["Right Arm"] = character.Torso["Right Shoulder"],
+}
+
+-- link them up
+local constraint_linkage: { [number]: AnimationConstraint | Motor6D } = {}
+for limb_name, constraint in tree do
+    local pointer = rig.limb_name_to_index[limb_name]
+    if pointer == nil then
+        error(`limb_name={limb_name} not found`)
+    end
+    constraint_linkage[pointer] = constraint
+end
+```
+```luau
+-- during some render process ...
+crunchyroll_animation.solve_animation(rig, {
+	... -- insert animations
+})
+
+for index, animation_constraint in constraint_linkage do
+	local transform = rig.limb_transforms[index]
+
+    local position = transform.position
+	local quat_vector = transform.quat_vector
+	local quat_scalar = transform.quat_scalar
+
+    animation_constraint.Transform = CFrame.new(
+		position.x,
+		position.y,
+		position.z,
+		quat_vector.x,
+		quat_vector.y,
+		quat_vector.z,
+		quat_scalar
+	)
+end
+```

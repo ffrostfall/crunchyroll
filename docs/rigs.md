@@ -46,3 +46,24 @@ return crunchyroll.create_rig({
 	},
 })
 ```
+
+### R6 rig with a joint attached to "HumanoidRootPart"
+
+```luau
+return crunchyroll.create_rig({
+    name = "HumanoidRootPart",
+	c0 = CFrame.identity,
+	c1 = CFrame.identity,
+	children = {
+		{
+			name = "Ball",
+			c0 = CFrame.new(0, -2, -2),
+			c1 = CFrame.identity,
+		},
+		{
+			name = "Torso",
+			-- ... the rest of r6 rig
+		},
+	},
+})
+```
