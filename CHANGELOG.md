@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Added optional `skip_result_coordinate_frames` parameter to `solve_animation` to bypass CFrame caching when not needed.
 
+### Fixed
+
+-   Fixed quanternion interpolation not taking the shortest path
+-   Fixed edge case for `keyframe_holes` where it would not fill from the last keyframe for a limb, to the last keyframe of the animation
+
 ## 0.2.0
 
 ### Added
