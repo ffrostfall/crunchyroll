@@ -164,6 +164,7 @@ function animation_asset.load_keyframe_sequence(
 		keyframe_poses = keyframe_poses,
 		length = length,
 		keyframe_holes = keframe_holes,
+		keyframe_markers = markers,
 	}
 end
 
