@@ -23,6 +23,7 @@ export type Identity = {
 	keyframe_times: { number },
 	keyframe_poses: { Poses },
 	keyframe_holes: { [number]: { KeyframeHole } },
+	keyframe_markers: { [string]: number },
 	length: number,
 }
 
